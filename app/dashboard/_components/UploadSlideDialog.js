@@ -33,6 +33,7 @@ function UploadSlideDialog({children}) {
     const [slide, setSlide] = useState();
     const [loading, setLoading] = useState(false);
     const [slideName, setSlideName] = useState();
+    const [open, setOpen] = useState(false);
 
     const onSlideSelect = (event) => {
         setSlide(event.target.files[0]);
@@ -41,48 +42,56 @@ function UploadSlideDialog({children}) {
     const onUpload = async () => {
         setLoading(true);
 
-        // // Step 1: Get a short-lived upload URL
-        // const postUrl = await generateUploadUrl();
-        // // Step 2: POST the file to the URL
-        // const result = await fetch(postUrl, {
-        // method: "POST",
-        // headers: { "Content-Type": slide?.type },
-        // body: slide,
-        // });
-        // const { storageId } = await result.json();
+        // Step 1: Get a short-lived upload URL
+        const tempPostUrl = await generateUploadUrl();
 
-        // console.log('storageId', storageId);
+        // Step 2: POST the file to the URL
+        const result = await fetch(tempPostUrl, {
+        method: "POST",
+        headers: { "Content-Type": slide?.type },
+        body: slide,
+        });
+        const { storageId } = await result.json();
 
-        // const slideId = uuid4();
-        // const slideUrl = await getSlideUrl({ storageId });
+        console.log('storageId', storageId);
 
-        // // Step 3: Save the newly allocated storage id to the database
-        // const uploadResult = await addSlideEntry({
-        //     slideId,
-        //     storageId,
-        //     slideName: slideName || 'Untitled Slide 🎢',
-        //     slideUrl,
-        //     createdBy: user?.primaryEmailAddress?.emailAddress
-        // })
-        // // await sendImage({ storageId, author: name });
-        // console.log('uploadResult: ', uploadResult);
+        const slideId = uuid4();
+        const slideUrl = await getSlideUrl({ storageId });
+
+        // Step 3: Save the newly allocated storage id to the database
+        const uploadResult = await addSlideEntry({
+            slideId: slideId,
+            storageId: storageId,
+            slideName: slideName || 'Untitled Slide 🎢',
+            slideUrl: slideUrl,
+            createdBy: user?.primaryEmailAddress?.emailAddress
+        })
+        // await sendImage({ storageId, author: name });
+        console.log('uploadResult: ', uploadResult);
 
         // API call to fetch slide data
-        const apiResult = await axios.get('/api/slide-loader');
+        const apiResult = await axios.get('/api/slide-loader?pdfUrl='+slideUrl);
         console.log('apiResult: ', apiResult.data.result);
-        const embeddResult = embeddSlide({
+
+        await embeddSlide({
             splitText: apiResult.data.result,
-            slideId: '1234'
+            slideId: slideId,
         });
 
-        console.log('embeddResult: ', embeddResult);
+        // console.log('embeddResult: ', embeddResult);
         setLoading(false);
+        setOpen(false);
 
     }
 
     return (
-    <Dialog>
-    <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open}>
+    <DialogTrigger asChild>
+    {/* {children} */}
+    <Button onClick={()=>setOpen(true)} className="w-full">
+        + Upload Lecture Slide
+    </Button>
+    </DialogTrigger>
     <DialogContent>
         <DialogHeader>
             <DialogTitle>Slide Into Knowledge! 🎢</DialogTitle>

@@ -4,6 +4,7 @@ import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { TaskType } from "@google/generative-ai";
 import { v } from "convex/values";
 
+const apiKey = process.env.GOOGLE_API_KEY;
 
 export const ingest = action({
   args: {
@@ -16,7 +17,7 @@ export const ingest = action({
         args.splitText,
         args.slideId,
         new GoogleGenerativeAIEmbeddings({
-            apiKey: process.env.GOOGLE_API_KEY,
+            apiKey: apiKey,
             model: "text-embedding-004", // 768 dimensions
             taskType: TaskType.RETRIEVAL_DOCUMENT,
             title: "Document title",

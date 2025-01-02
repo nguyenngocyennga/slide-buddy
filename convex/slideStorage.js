@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
@@ -33,5 +33,16 @@ export const getSlideUrl = mutation({
   handler: async (ctx, args) => {
     const slideUrl = await ctx.storage.getUrl(args.storageId);
     return slideUrl;
+  }
+})
+
+export const getSlideRecord = query({
+  args: {
+    slideId: v.string()
+  },
+  handler: async(ctx, args) => {
+    const result = await ctx.db.query("slides").filter((q) => q.eq(q.field("slideId"), args.slideId)).collect();
+    console.log('getSlideRecord', result[0]);
+    return result[0];
   }
 })

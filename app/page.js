@@ -25,7 +25,8 @@ export default function Home() {
   }
   return (
     <div>
-      <h2>Landing Pageeeeeee Waittttt forrrr ittttt ... 🫠</h2>
+      <h2>Hellowww </h2>
+      <Button>Click me</Button>
       <UserButton/>
     </div>
   );
