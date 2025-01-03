@@ -49,3 +49,13 @@ export const getSlideRecord = query({
     return result[0];
   },
 });
+
+export const getUserSlides = query({
+  args: {
+    createdBy: v.string()
+  },
+  handler: async(ctx, args) => {
+    const result = await ctx.db.query("slides").filter((q) => q.eq(q.field("createdBy"), args.createdBy)).collect();
+    return result;
+  }
+})

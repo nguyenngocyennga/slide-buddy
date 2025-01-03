@@ -171,9 +171,11 @@ function NoteExtension({ editor }) {
 
                     <button
                         onClick={() => onAiClick()}
-                        className={""}
+                        className={"rounded border border-[#5574e6] text-[#5574e6] hover:bg-[#5574e6] hover:text-white p-1"}
                         >
-                        <RocketIcon className='hover:text-[#5574e6]' />
+                        <span className='flex'>
+                        {/* <RocketIcon className='hover:text-[#5574e6]' /> */}
+                        🚀 Ask Buddy! </span>
                     </button>
                 </div>
             </div>

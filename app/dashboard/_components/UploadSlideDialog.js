@@ -20,6 +20,7 @@ import uuid4 from 'uuid4';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
 import { ingest } from '@/convex/myAction';
+import { toast } from 'sonner';
   
 
 function UploadSlideDialog({children}) {
@@ -83,6 +84,7 @@ function UploadSlideDialog({children}) {
         // console.log('embeddResult: ', embeddResult);
         setLoading(false);
         setOpen(false);
+        toast.success('Slide uploaded successfully! 🎢');
 
     }
 
