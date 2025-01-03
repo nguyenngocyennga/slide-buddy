@@ -7,9 +7,9 @@ const SlideViewer = ({ slideUrl }) => {
         <div>
             <iframe 
                 src={slideUrl} 
-                height="90vh" 
+                height="100vh" 
                 width="100%"
-                className='h-[90vh]'
+                className='h-[100vh]'
                 />
         </div>
     );

@@ -76,6 +76,8 @@ function UploadSlideDialog({children}) {
         await embeddSlide({
             splitText: apiResult.data.result,
             slideId: slideId,
+            slideName, 
+            createdBy: user?.primaryEmailAddress?.emailAddress,
         });
 
         // console.log('embeddResult: ', embeddResult);
@@ -88,7 +90,7 @@ function UploadSlideDialog({children}) {
     <Dialog open={open}>
     <DialogTrigger asChild>
     {/* {children} */}
-    <Button onClick={()=>setOpen(true)} className="w-full">
+    <Button onClick={()=>setOpen(true)} className="w-full p-3">
         + Upload Lecture Slide
     </Button>
     </DialogTrigger>

@@ -1,11 +1,97 @@
-import { BoldIcon, CodeIcon, Heading1Icon, Heading2Icon, Heading3Icon, HighlighterIcon, ItalicIcon, ListIcon, QuoteIcon, StrikethroughIcon } from 'lucide-react';
+import { BoldIcon, CodeIcon, Heading1Icon, Heading2Icon, Heading3Icon, HighlighterIcon, ItalicIcon, ListIcon, QuoteIcon, RocketIcon, SparklesIcon, StrikethroughIcon } from 'lucide-react';
 import React from 'react';
 import Highlight from '@tiptap/extension-highlight';
+import { useAction, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useParams } from 'next/navigation';
+import { chatSession } from '@/configs/AIModel';
+import { toast } from 'sonner';
+import { useUser } from '@clerk/nextjs';
+import { Button } from '@/components/ui/button';
 
 
 function NoteExtension({ editor }) {
+    const { slideId } = useParams();
+    const { user } = useUser();
+
+    const searchAI = useAction(api.myAction.search);
+
+    const addNotes = useMutation(api.notes.addNotes);
+
+    const onAiClick = async () => {
+        toast('🚀 Our Buddy is thinking...');
+        // console.log('AI Clicked!');
+        const selectedText = editor.state.doc.textBetween(
+            editor.state.selection.from,
+            editor.state.selection.to,
+            " "
+        )
+        console.log("selectedText", selectedText);
+        const searchAIResult = await searchAI({
+            query: selectedText,
+            slideId: slideId
+        })
+
+        const unformattedSearchAIResult = JSON.parse(searchAIResult);
+
+        // console.log("unformatted searchAIResult", searchAIResult);
+
+        let allUnformattedAnswers = "";
+        unformattedSearchAIResult && unformattedSearchAIResult.forEach(
+            item => {
+                allUnformattedAnswers += item.pageContent
+            }
+        );
+
+        const PROMT = "For question: " + selectedText + " and the given content as answer, please give appropriate answer in HTML format. The answer content is: "+ allUnformattedAnswers + "If the content is not clear, you can come up with your own answer. Thank you!";
+
+        const geminiAIResult = await chatSession.sendMessage(PROMT);
+        console.log("geminiAIResult", geminiAIResult.response.text());
+
+        const finalAnswers = geminiAIResult.response.text().trim();
+        const strippedAnswers = finalAnswers.startsWith('```html') ? finalAnswers.slice(7) : finalAnswers;
+        const cleanAnswers = strippedAnswers.endsWith('```') ? strippedAnswers.slice(0, -3) : strippedAnswers;
+
+        const allText = editor.getHTML();
+        editor.commands.setContent(allText + "</div><p><strong>Answer 🚀:</strong></p>" + cleanAnswers+ "<br/></div>")
+
+        addNotes({
+            notes: editor.getHTML(),
+            slideId: slideId,
+            createdBy: user?.primaryEmailAddress?.emailAddress
+        })
+
+    };
+
+    const onSaveClick = () => {
+        addNotes({
+            notes: editor.getHTML(),
+            slideId: slideId,
+            createdBy: user?.primaryEmailAddress?.emailAddress  
+        });
+        toast('🚀 Notes saved successfully!');
+    };
+
     return editor && (
-        <div className='p-5'>
+        <div className='p-5' style={{ position: 'relative', paddingBottom: '60px' }}>
+            <Button
+                onClick={onSaveClick}
+                style={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    backgroundColor: '#5574e6',
+                    color: 'white',
+                    padding: '10px 20px',
+                    borderRadius: '5px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    zIndex: 1000
+                }}
+                className="hover:bg-[#405bb5]"
+            >
+                Save Notes 🚀
+            </Button>
             <div className="control-group">
                 <div className="button-group flex gap-3">
                 <button
@@ -83,7 +169,12 @@ function NoteExtension({ editor }) {
                         <HighlighterIcon />
                     </button>
 
-
+                    <button
+                        onClick={() => onAiClick()}
+                        className={""}
+                        >
+                        <RocketIcon className='hover:text-[#5574e6]' />
+                    </button>
                 </div>
             </div>
         </div>
@@ -91,3 +182,4 @@ function NoteExtension({ editor }) {
 }
 
 export default NoteExtension;
+// export { NoteExtension, addNotes };

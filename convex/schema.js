@@ -19,9 +19,18 @@ export default defineSchema({
     documents: defineTable({
         embedding: v.array(v.number()),
         text: v.string(),
-        metadata: v.any(),
-        }).vectorIndex("byEmbedding", {
-        vectorField: "embedding",
-        dimensions: 1536,
+        metadata: v.object({
+            slideId: v.string(),
+            slideName: v.string(),
+            createdBy: v.string(),
         }),
-})
+    }).vectorIndex("byEmbedding", {
+        vectorField: "embedding",
+        dimensions: 768,
+    }),
+    notes: defineTable({
+        slideId: v.string(),
+        notes: v.any(),
+        createdBy: v.string(),
+    }),
+});

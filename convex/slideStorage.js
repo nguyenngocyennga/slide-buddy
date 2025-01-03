@@ -23,8 +23,8 @@ export const addSlideEntryToDatabase = mutation({
     });
 
     return "Slide added successfully!";
-  }
-})
+  },
+});
 
 export const getSlideUrl = mutation({
   args: {
@@ -33,16 +33,19 @@ export const getSlideUrl = mutation({
   handler: async (ctx, args) => {
     const slideUrl = await ctx.storage.getUrl(args.storageId);
     return slideUrl;
-  }
-})
+  },
+});
 
 export const getSlideRecord = query({
   args: {
     slideId: v.string()
   },
   handler: async(ctx, args) => {
-    const result = await ctx.db.query("slides").filter((q) => q.eq(q.field("slideId"), args.slideId)).collect();
+    const result = await ctx.db
+      .query("slides")
+      .filter((q) => q.eq(q.field("slideId"), args.slideId))
+      .collect();
     console.log('getSlideRecord', result[0]);
     return result[0];
-  }
-})
+  },
+});

@@ -20,15 +20,15 @@ function LearningHub() {
 
     return (
         <div>
-            <LearningHubHeader />
+            <LearningHubHeader slideName={slideInfo?.slideName} />
             <div className='grid grid-cols-2 gap-5'>
-                <div>
+                <div className='h-[90vh]'>
                     {/* Slide Viewer */}
                     <SlideViewer slideUrl={slideInfo?.slideUrl}/>
                 </div>
-                <div>
+                <div className='h-[90vh]'>
                     {/* Note Editor */}
-                    <NoteEditor />
+                    <NoteEditor slideId={slideId} />
                 </div>
             </div>
         </div>

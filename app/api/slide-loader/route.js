@@ -26,8 +26,8 @@ export async function GET(request) {
 
     // Split the text content into chunks
     const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 100,
-        chunkOverlap: 20,
+        chunkSize: 1000,
+        chunkOverlap: 100,
       });
 
     const output = await splitter.createDocuments([slideTextContent]);

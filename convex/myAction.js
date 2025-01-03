@@ -10,12 +10,17 @@ export const ingest = action({
   args: {
     splitText: v.any(),
     slideId: v.string(),
-
+    slideName: v.string(), // new schema
+    createdBy: v.string(), // new schema
   },
   handler: async (ctx, args) => {
     await ConvexVectorStore.fromTexts(
         args.splitText,
-        args.slideId,
+        {
+          slideId: args.slideId,
+          slideName: args.slideName,
+          createdBy: args.createdBy,
+        },
         new GoogleGenerativeAIEmbeddings({
             apiKey: apiKey,
             model: "text-embedding-004", // 768 dimensions
@@ -26,5 +31,31 @@ export const ingest = action({
 
     );
     return "Action completed"
+  },
+});
+
+export const search = action({
+  args: {
+    query: v.string(),
+    slideId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const vectorStore = new ConvexVectorStore(
+      // new OpenAIEmbeddings(), 
+      new GoogleGenerativeAIEmbeddings({
+        apiKey: apiKey,
+        model: "text-embedding-004", // 768 dimensions
+        taskType: TaskType.RETRIEVAL_DOCUMENT,
+        title: "Document title",
+      }),
+      { ctx }
+    );
+
+    const resultOne = (await vectorStore.similaritySearch(args.query, 1)).filter(
+      (q) => q.metadata.slideId === args.slideId
+    );
+    console.log(resultOne);
+
+    return JSON.stringify(resultOne);
   },
 });
