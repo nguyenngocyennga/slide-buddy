@@ -26,7 +26,7 @@ export default function Home() {
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-cyan-300 p-8">
-
+    {/* Navbar */}
     <nav className="flex items-center justify-between py-6">
       <div className="flex items-center space-x-4">
         <Image

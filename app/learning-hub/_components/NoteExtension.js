@@ -43,7 +43,7 @@ function NoteExtension({ editor }) {
             }
         );
 
-        const PROMT = "For question: " + selectedText + " and the given content as answer, please give appropriate answer in HTML format. The answer content is: "+ allUnformattedAnswers + "If the content is not clear, you can come up with your own answer. Thank you!";
+        const PROMT = "For question: " + selectedText + " and the given content as answer, please give appropriate answer in HTML format. The answer content is: "+ allUnformattedAnswers + "If the content is not clear, you can come up with your own answer. If there is a number standalone out of context, please ignore it as it's likely page number or typo, don't include it in response. If the provided text does not have enough information, you can mention that but also provide extra information not included in the provided content, it would be helpful for user. Thank you!";
 
         const geminiAIResult = await chatSession.sendMessage(PROMT);
         console.log("geminiAIResult", geminiAIResult.response.text());
@@ -53,7 +53,7 @@ function NoteExtension({ editor }) {
         const cleanAnswers = strippedAnswers.endsWith('```') ? strippedAnswers.slice(0, -3) : strippedAnswers;
 
         const allText = editor.getHTML();
-        editor.commands.setContent(allText + "</div><p><strong>Answer 🚀:</strong></p>" + cleanAnswers+ "<br/></div>")
+        editor.commands.setContent(allText + "</div><p><strong>Answer 🚀:</strong></p>" + cleanAnswers+ "<br/><br/></div>")
 
         addNotes({
             notes: editor.getHTML(),
@@ -73,27 +73,21 @@ function NoteExtension({ editor }) {
     };
 
     return editor && (
-        <div className='p-5' style={{ position: 'relative', paddingBottom: '60px' }}>
+        <div className='' style={{ position: 'relative'}}>
             <Button
                 onClick={onSaveClick}
                 style={{
                     position: 'fixed',
                     bottom: '20px',
-                    right: '20px',
-                    backgroundColor: '#5574e6',
-                    color: 'white',
-                    padding: '10px 20px',
-                    borderRadius: '5px',
-                    border: 'none',
+                    right: '35px',
                     cursor: 'pointer',
                     zIndex: 1000
                 }}
-                className="hover:bg-[#405bb5]"
             >
                 Save Notes 🚀
             </Button>
-            <div className="control-group">
-                <div className="button-group flex gap-3">
+            <div className="control-group sticky top-0 z-10 flex gap-3 p-3 bg-white shadow-sm border-t border-b border-gray-200">
+                <div className="button-group flex gap-5">
                 <button
                         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                         className={editor.isActive('heading', { level: 1 }) ? 'text-[#5574e6]' : ''}

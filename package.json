@@ -17,6 +17,8 @@
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@sentry/nextjs": "^8.41.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tiptap/extension-code-block-lowlight": "^2.10.3",
     "@tiptap/extension-highlight": "^2.10.3",
     "@tiptap/extension-placeholder": "^2.10.3",
