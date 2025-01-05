@@ -1,3 +1,8 @@
+// ------------------------ Note Editor Component ----------------------------------------
+// This component provides a rich-text editor for taking notes on a specific slide.
+// It uses Tiptap, a highly extensible editor framework, and integrates custom extensions like highlights and placeholders.
+// Notes are dynamically fetched from the database and displayed in the editor.
+
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -12,15 +17,25 @@ import { api } from '@/convex/_generated/api';
 
 const lowlight = createLowlight(all)
 
+/**
+ * NoteEditor Component
+ * A rich-text editor built using Tiptap for note-taking on a specific slide.
+ * 
+ * Features:
+ * - Fetches notes for the given slide ID and displays them in the editor.
+ * - Supports placeholder text and multicolor highlights.
+ * - Integrates custom extensions for a tailored note-taking experience.
+ */
 function NoteEditor({ slideId }) {
-
+    // Fetch notes associated with the given slide ID
     const notes = useQuery(api.notes.getNotes, {
         slideId: slideId,
     });
 
+    // Initialize the Tiptap editor with custom extensions
     const editor = useEditor({
         extensions: [
-            StarterKit, 
+            StarterKit, // Basic editing functionalities like bold, italics, and headings
             // Markdown,
             Placeholder.configure({
                 placeholder: "Jot down your notes... or chat with our Buddy for clarity! ✨ 🤓"
@@ -32,16 +47,17 @@ function NoteEditor({ slideId }) {
             //     lowlight,
             //   }),
         ],
-        content: '',
+        content: '', // Initial content for the editor
         editorProps: {
             attributes: {
-                class: 'focus:outline-none h-screen p-5',
+                class: 'focus:outline-none h-screen p-5', // Styling for the editor
             },
         },
       })
 
+      // Update editor content whenever notes are fetched
       useEffect(() => {
-        editor && editor.commands.setContent(notes);
+        editor && editor.commands.setContent(notes); // Safeguard against undefined notes
       }, [notes && editor]);
 
     return (

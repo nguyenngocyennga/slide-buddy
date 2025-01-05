@@ -1,3 +1,8 @@
+// ------------------------ Dashboard Component ----------------------------------------
+// This component serves as the main dashboard for the user's learning hub.
+// It displays a list of uploaded slides and provides links to access individual slide details.
+// Includes a loading skeleton while the data is being fetched.
+
 "use client";
 
 import { api } from "@/convex/_generated/api";
@@ -7,14 +12,23 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+/**
+ * Dashboard Component
+ * Displays the user's uploaded slides in a grid layout.
+ * - Fetches slides using Convex's `getUserSlides` query.
+ * - Shows each slide as a card with a link to its specific learning hub.
+ * - Displays a loading skeleton when the slide list is being fetched or is empty.
+ */
 function Dashboard () {
+  // Fetch the logged-in user's data
   const { user } = useUser();
 
+  // Query to fetch slides created by the current user
   const slideList = useQuery(api.slideStorage.getUserSlides, {
     createdBy: user?.primaryEmailAddress?.emailAddress,
   })
 
-  console.log('slideList', slideList);
+  // console.log('slideList', slideList);
 
   return (
     <div>

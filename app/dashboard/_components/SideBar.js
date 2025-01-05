@@ -1,3 +1,7 @@
+// ------------------------ Sidebar Component ----------------------------------------
+// This component renders the sidebar for the application.
+// It includes navigation links, an upload slide dialog, and branding with the logo.
+
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Bluetooth, GitGraphIcon, Layout, LayoutDashboardIcon, Shield } from "lucide-react";
@@ -6,6 +10,16 @@ import React from "react";
 import UploadSlideDialog from "./UploadSlideDialog";
 import Link from "next/link";
 
+/**
+ * SideBar Component
+ * Provides the application's main navigation links and utility options, such as uploading lecture slides.
+ * Features:
+ * - Application logo with a link to the dashboard.
+ * - Upload Slide Dialog button.
+ * - Learning Hub navigation link.
+ * 
+ * Unused sections like progress tracking or additional features are commented for future development.
+ */
 function SideBar () {
   return (
     <div className="shadow-md h-screen p-7">

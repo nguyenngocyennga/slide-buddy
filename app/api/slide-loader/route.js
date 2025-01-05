@@ -1,16 +1,26 @@
+// ------------------------ PDF Text Extraction API ----------------------------------------
+// This API endpoint extracts text from a PDF, splits the content into chunks,
+// and returns the chunks in JSON format. It uses LangChain's WebPDFLoader
+// and RecursiveCharacterTextSplitter for efficient text processing.
+
 import { NextResponse } from "next/server";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
-
-// const slideUrl = "https://shiny-greyhound-276.convex.cloud/api/storage/ad7bd9e9-2c34-4a5c-be72-6557878b76b2" 
-
+/**
+ * GET Request Handler
+ * Processes a PDF file provided via the `pdfUrl` query parameter.
+ * - Fetches the PDF from the provided URL.
+ * - Extracts text content from the PDF using WebPDFLoader.
+ * - Splits the extracted text into chunks using RecursiveCharacterTextSplitter.
+ * - Returns the processed text chunks as JSON.
+ */
 export async function GET(request) {
 
     const requestUrl = request.url;
     const { searchParams } = new URL(requestUrl);
     const pdfUrl = searchParams.get("pdfUrl");
-    console.log('pdfUrl', pdfUrl);
+    // console.log('pdfUrl', pdfUrl);
 
     // Fetch the slide from the URL
     const response = await fetch(pdfUrl);
@@ -24,10 +34,10 @@ export async function GET(request) {
         slideTextContent += doc.pageContent;
     });
 
-    // Split the text content into chunks
+    // Split the text content into chunks for processing
     const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 100,
+        chunkSize: 1000, // Maximum size of each chunk
+        chunkOverlap: 100, // Overlap between chunks for context preservation
       });
 
     const output = await splitter.createDocuments([slideTextContent]);
@@ -38,7 +48,7 @@ export async function GET(request) {
         splitterList.push(doc.pageContent);
     });
 
-    // Return the text content
+    // Return the chunks as a JSON response
     return NextResponse.json({result: splitterList});
 
 }

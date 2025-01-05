@@ -1,3 +1,8 @@
+// ------------------------ Note Extension Component ----------------------------------------
+// This component provides an enhanced toolbar for the Tiptap editor in the Learning Hub.
+// It includes various formatting options, an AI assistant for answering questions, and a "Save Notes" button.
+// The AI assistant integrates with Convex and Gemini AI to generate context-aware responses.
+
 import { BoldIcon, CodeIcon, Heading1Icon, Heading2Icon, Heading3Icon, HighlighterIcon, ItalicIcon, ListIcon, QuoteIcon, RocketIcon, SparklesIcon, StrikethroughIcon } from 'lucide-react';
 import React from 'react';
 import Highlight from '@tiptap/extension-highlight';
@@ -9,29 +14,49 @@ import { toast } from 'sonner';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 
-
+/**
+ * NoteExtension Component
+ * Provides an interactive toolbar for text formatting, AI-assisted content generation, and note-saving functionality.
+ * 
+ * Props:
+ * @param {object} editor - The Tiptap editor instance used for rich-text editing.
+ * 
+ * @returns {JSX.Element} - A toolbar for the Tiptap editor.
+ */
 function NoteExtension({ editor }) {
+    // Extract slide ID from the URL
     const { slideId } = useParams();
+
+    // Fetch user details from Clerk
     const { user } = useUser();
 
+    // Convex API actions and mutations
     const searchAI = useAction(api.myAction.search);
-
     const addNotes = useMutation(api.notes.addNotes);
 
+    /**
+     * Handles the "Ask Buddy" AI assistant functionality.
+     * Fetches context-aware answers using selected text and AI models.
+     */
     const onAiClick = async () => {
         toast('🚀 Our Buddy is thinking...');
         // console.log('AI Clicked!');
+
+        // Get the selected text in the editor
         const selectedText = editor.state.doc.textBetween(
             editor.state.selection.from,
             editor.state.selection.to,
             " "
         )
-        console.log("selectedText", selectedText);
+        // console.log("selectedText", selectedText);
+
+        // Fetch related content using Convex 
         const searchAIResult = await searchAI({
             query: selectedText,
             slideId: slideId
         })
 
+        // Combine all fetched content into one string
         const unformattedSearchAIResult = JSON.parse(searchAIResult);
 
         // console.log("unformatted searchAIResult", searchAIResult);
@@ -43,18 +68,23 @@ function NoteExtension({ editor }) {
             }
         );
 
+        // Create a prompt for the Gemini AI
         const PROMT = "For question: " + selectedText + " and the given content as answer, please give appropriate answer in HTML format. The answer content is: "+ allUnformattedAnswers + "If the content is not clear, you can come up with your own answer. If there is a number standalone out of context, please ignore it as it's likely page number or typo, don't include it in response. If the provided text does not have enough information, you can mention that but also provide extra information not included in the provided content, it would be helpful for user. Thank you!";
 
+        // Get AI-generated response
         const geminiAIResult = await chatSession.sendMessage(PROMT);
-        console.log("geminiAIResult", geminiAIResult.response.text());
+        // console.log("geminiAIResult", geminiAIResult.response.text());
 
+        // Strip unnecessary formatting from the AI response
         const finalAnswers = geminiAIResult.response.text().trim();
         const strippedAnswers = finalAnswers.startsWith('```html') ? finalAnswers.slice(7) : finalAnswers;
         const cleanAnswers = strippedAnswers.endsWith('```') ? strippedAnswers.slice(0, -3) : strippedAnswers;
 
+        // Append AI response to the editor content
         const allText = editor.getHTML();
         editor.commands.setContent(allText + "</div><p><strong>Answer 🚀:</strong></p>" + cleanAnswers+ "<br/><br/></div>")
 
+        // Save updated notes to the database
         addNotes({
             notes: editor.getHTML(),
             slideId: slideId,
@@ -63,6 +93,9 @@ function NoteExtension({ editor }) {
 
     };
 
+    /**
+     * Saves the current editor content as notes.
+     */
     const onSaveClick = () => {
         addNotes({
             notes: editor.getHTML(),

@@ -1,3 +1,6 @@
+// ------------------------ Header Component ----------------------------------------
+// This component renders the header of the application.
+
 import { UserButton } from "@clerk/nextjs";
 import React from "react";
 

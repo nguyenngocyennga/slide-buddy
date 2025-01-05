@@ -7,14 +7,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
+// -------------------------- Home Component ----------------------------------
+// Renders the homepage of Slide Buddy with a hero section, navigation, and feature highlights.
 export default function Home() {
+  // ------------------------ Hooks and Mutations -----------------------------
   const { user } = useUser();
   const createUser = useMutation(api.user.createUser);
 
+  // ------------------------ Side Effect -------------------------------------
+  // On user change, ensure the user is added to the database
   useEffect(() => {
     user && CheckUser();
   }, [user])
 
+  // ------------------------ Helper Functions --------------------------------
+  // Checks if the user exists in the database; if not, creates the user
   const CheckUser = async () => {
     const result = await createUser({
       email: user?.primaryEmailAddress?.emailAddress,
@@ -22,11 +29,13 @@ export default function Home() {
       userName: user?.fullName,
     })
 
-    console.log(result);
+    // console.log(result);
   }
+
+  // ------------------------ Component UI ------------------------------------
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-cyan-300 p-8">
-    {/* Navbar */}
+    {/* --------------------- Navbar ---------------------------------------- */}
     <nav className="flex items-center justify-between py-6">
       <div className="flex items-center space-x-4">
         <Image
@@ -47,7 +56,7 @@ export default function Home() {
       </div>
     </nav>
 
-    {/* text-purple-900  text-[#5574e6] */}
+    {/* --------------------- Main Section ---------------------------------- */}
     <main className="flex flex-col items-center text-center mt-16 space-y-6">
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#2c4695] leading-tight">
         Take Notes. Ask Questions. <br />
@@ -71,6 +80,7 @@ export default function Home() {
       </div>
     </main>
 
+    {/* --------------------- Features Section ------------------------------ */}
     <section className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
       {[
         {
@@ -101,7 +111,7 @@ export default function Home() {
       ))}
     </section>
 
-
+    {/* --------------------- Footer Section -------------------------------- */}
     <footer className="mt-12 text-center text-gray-600">
       <p className="text-sm">
         Built with ❤️ by the Slide Buddy team. We’re just getting started—

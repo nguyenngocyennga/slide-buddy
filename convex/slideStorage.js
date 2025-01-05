@@ -1,10 +1,19 @@
+// ------------------------ Slide Management ------------------------------------
+// This file contains the Convex server logic for managing lecture slides.
+// It includes mutations for generating upload URLs, adding slide records to the database,
+// retrieving slide URLs, and querying slide data for users or individual slides.
+
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+// ------------------------ Mutation: Generate Upload URL ----------------------
+// Generates a short-lived upload URL for securely uploading files to storage.
 export const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
 });
 
+// ------------------------ Mutation: Add Slide Entry to Database --------------
+// Adds a new slide record to the "slides" table in the database.
 export const addSlideEntryToDatabase = mutation({
   args: {
     slideId: v.string(),
@@ -26,6 +35,8 @@ export const addSlideEntryToDatabase = mutation({
   },
 });
 
+// ------------------------ Mutation: Get Slide URL ----------------------------
+// Retrieves the storage URL for a given storage ID.
 export const getSlideUrl = mutation({
   args: {
     storageId: v.string()
@@ -36,6 +47,8 @@ export const getSlideUrl = mutation({
   },
 });
 
+// ------------------------ Query: Get Slide Record ----------------------------
+// Retrieves a specific slide record from the "slides" table by slide ID.
 export const getSlideRecord = query({
   args: {
     slideId: v.string()
@@ -45,11 +58,13 @@ export const getSlideRecord = query({
       .query("slides")
       .filter((q) => q.eq(q.field("slideId"), args.slideId))
       .collect();
-    console.log('getSlideRecord', result[0]);
+    // console.log('getSlideRecord', result[0]);
     return result[0];
   },
 });
 
+// ------------------------ Query: Get User's Slides ---------------------------
+// Retrieves all slides created by a specific user.
 export const getUserSlides = query({
   args: {
     createdBy: v.string()

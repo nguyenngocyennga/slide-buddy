@@ -1,3 +1,12 @@
+// ------------------------ Upload Slide Dialog Component ----------------------------------
+// This component provides a dialog for uploading lecture slides.
+// It allows users to upload PDF files, name the slide, and process it for text extraction and embedding.
+// Features:
+// - File upload with validation for PDF format.
+// - Integration with Convex for generating upload URLs and saving slide metadata.
+// - Text extraction and embedding for AI-powered processing.
+// - Toast notifications for user feedback.
+
 "use client";
 
 import React, { useState } from 'react';
@@ -22,24 +31,36 @@ import axios from 'axios';
 import { ingest } from '@/convex/myAction';
 import { toast } from 'sonner';
   
-
+/**
+ * UploadSlideDialog Component
+ * Handles the upload of lecture slides and integrates multiple functionalities:
+ * - Generates a short-lived upload URL via Convex.
+ * - Uploads the slide and saves its metadata to the database.
+ * - Extracts text content from the slide and embeds it for AI processing.
+ * - Displays a toast notification upon successful upload. 
+ */
 function UploadSlideDialog({children}) {
-
+    // Convex API hooks for mutations and actions
     const generateUploadUrl = useMutation(api.slideStorage.generateUploadUrl);
     const addSlideEntry = useMutation(api.slideStorage.addSlideEntryToDatabase);
     const getSlideUrl = useMutation(api.slideStorage.getSlideUrl);
     const embeddSlide = useAction(api.myAction.ingest);
 
+    // User data from Clerk
     const { user } = useUser();
+
+    // Local state for managing slide data and UI behavior
     const [slide, setSlide] = useState();
     const [loading, setLoading] = useState(false);
     const [slideName, setSlideName] = useState();
     const [open, setOpen] = useState(false);
 
+    // Handles file selection for slide upload
     const onSlideSelect = (event) => {
         setSlide(event.target.files[0]);
     }
 
+    // Handles the upload of the selected slide
     const onUpload = async () => {
         setLoading(true);
 
@@ -54,7 +75,7 @@ function UploadSlideDialog({children}) {
         });
         const { storageId } = await result.json();
 
-        console.log('storageId', storageId);
+        // console.log('storageId', storageId);
 
         const slideId = uuid4();
         const slideUrl = await getSlideUrl({ storageId });
@@ -68,12 +89,13 @@ function UploadSlideDialog({children}) {
             createdBy: user?.primaryEmailAddress?.emailAddress
         })
         // await sendImage({ storageId, author: name });
-        console.log('uploadResult: ', uploadResult);
+        // console.log('uploadResult: ', uploadResult);
 
-        // API call to fetch slide data
+        // Step 4: Extract text content from the slide
         const apiResult = await axios.get('/api/slide-loader?pdfUrl='+slideUrl);
-        console.log('apiResult: ', apiResult.data.result);
+        // console.log('apiResult: ', apiResult.data.result);
 
+        // Step 5: Embed the extracted text for AI processing
         await embeddSlide({
             splitText: apiResult.data.result,
             slideId: slideId,
@@ -81,6 +103,7 @@ function UploadSlideDialog({children}) {
             createdBy: user?.primaryEmailAddress?.emailAddress,
         });
 
+        // Finalize the process
         // console.log('embeddResult: ', embeddResult);
         setLoading(false);
         setOpen(false);

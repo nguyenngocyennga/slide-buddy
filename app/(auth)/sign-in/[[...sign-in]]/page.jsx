@@ -1,3 +1,6 @@
+// ------------------------ Authentication Page ---------------------------
+// This component renders the SignIn page using Clerk's SignIn component.
+
 import { SignIn } from '@clerk/nextjs'
 
 export default function Page() {
