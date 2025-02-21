@@ -306,7 +306,7 @@ The architecture of Slide Buddy integrates the following key components:
 
 #### Visual Prototype
 
-Visual mockups and prototypes were created to guide development, not only for this iteration but also act as a platform for future features prototypes. Please view the current prototype here: [[IT5007] Project 18 - Slide Buddy - Figma Prototype](https://www.figma.com/design/nU4OsEacpjXAjsiYgv1OuO/%5BIT5007%5D-Project-18---Slide-Buddy?node-id=0-1&m=dev&t=LQQEmUkK4wJp4TOv-1)
+Visual mockups and prototypes were created to guide development, not only for this iteration but also act as a platform for future features prototypes. Please view the current prototype here: [Slide Buddy - Figma Prototype](https://www.figma.com/design/nU4OsEacpjXAjsiYgv1OuO/Slide-Buddy)
 
 ![Figma Prototype](./public/figma.png)
 
